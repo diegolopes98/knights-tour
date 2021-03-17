@@ -64,6 +64,13 @@ const getHorsePossibleMoves = (currLine, currColumn) => ([
   { x: currColumn - 2, y: currLine + 1 },
 ])
 
+const countPossibleMoves = (board, possibleMoves, { x, y}) => {
+  const newBoard = fillMatrixIdx(board, y, x)
+  return possibleMoves
+    .filter((move) => newBoard[move.y] && newBoard[move.y][move.x] === 0)
+    .length
+}
+
 const getNextMove = (board, possibleMoves) => {
   const calculate = (board, moves, attempt) => {
     if(attempt > 7) return
@@ -106,6 +113,8 @@ const main = () => {
 
   console.log(result.moves)
   console.log(result.board)
+
+  console.log(countPossibleMoves(board, getHorsePossibleMoves(line, column), {x: column, y: line}))
 }
 
 main()
