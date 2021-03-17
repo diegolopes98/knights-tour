@@ -83,17 +83,22 @@ const getNextMove = (board, possibleMoves) => {
   return calculate(board, possibleMoves, 0)
 }
 
-const getMoves = (board, line, column, acc = { moves: [], board: board}) => {
+const getMoves = (board, line, column, count = 1, acc = { moves: [], board: board}) => {
+  if(count === 1) {
+    board = fillMatrixIdx(board, line, column, count)
+    return getMoves(board, line, column, count + 1)
+  }
   const nextMove = getNextMove(board, getHorsePossibleMoves(line, column))
   if(!nextMove) return acc
   else {
     const boardColumn = mapBoardColumn(column)
     const boardLine = mapBoardLine(line)
-    const newBoard = fillMatrixIdx(board, nextMove.y, nextMove.x)
+    const newBoard = fillMatrixIdx(board, nextMove.y, nextMove.x, count)
     return getMoves(
       newBoard,
       nextMove.y,
       nextMove.x,
+      count + 1,
       {
         board: newBoard,
         moves: acc.moves.concat([boardColumn + boardLine.toString()])
@@ -107,14 +112,15 @@ const main = () => {
   const column = mapMatrixColumn(initialPosition[0]) // x 
   const line = mapMatrixLine(initialPosition[1])  // y
   
-  board = fillMatrixIdx(board, line, column)
-  
   const result = getMoves(board, line, column)
 
   console.log(result.moves)
-  console.log(result.board)
-
-  console.log(countPossibleMoves(board, getHorsePossibleMoves(line, column), {x: column, y: line}))
+  result.board.forEach((line) => {
+    console.log('\n')
+    console.log(line.reduce((prev, next) =>{
+      return prev + (next.toString().length > 1 ? '| ' + next : '|  ' + next)
+    }, ''))
+  })
 }
 
 main()
