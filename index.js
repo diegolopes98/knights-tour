@@ -54,14 +54,14 @@ const mapBoardLine = (matrixLine) => {
 }
 
 const getHorsePossibleMoves = (currLine, currColumn) => ([
+  { x: currColumn - 1, y: currLine + 2 },
+  { x: currColumn - 2, y: currLine + 1 },
   { x: currColumn - 2, y: currLine - 1 },
   { x: currColumn - 1, y: currLine - 2 },
   { x: currColumn + 1, y: currLine - 2 },
   { x: currColumn + 2, y: currLine - 1 },
   { x: currColumn + 2, y: currLine + 1 },
   { x: currColumn + 1, y: currLine + 2 },
-  { x: currColumn - 1, y: currLine + 2 },
-  { x: currColumn - 2, y: currLine + 1 },
 ])
 
 const countPossibleMoves = (board, possibleMoves, { x, y}) => {
