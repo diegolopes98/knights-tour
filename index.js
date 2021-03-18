@@ -38,7 +38,7 @@ const mapMatrixColumn = (letter) => {
 }
 
 const mapBoardColumn = (matrixColumn) => {
-  if (matrixColumn < 8) return ['a','b','c','d','e','f','g','h'][matrixColumn]
+  if (matrixColumn < 8) return ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][matrixColumn]
   throw new Error('Invalid column: ' + matrixColumn)
 }
 
@@ -64,23 +64,23 @@ const getKnightPossibleMoves = () => ([
   { x: + 1, y: + 2 },
 ])
 
-const checkBoardRange = (value) => value >=0 && value < 8
+const checkBoardRange = (value) => value >= 0 && value < 8
 
-const checkValidMove = (board, line, column) => 
-  checkBoardRange(line) && 
+const checkValidMove = (board, line, column) =>
+  checkBoardRange(line) &&
   checkBoardRange(column) &&
   board[line][column] === 0
 
-const getMoves = (board, line, column, count = 1, acc = { moves: [], board: board}) => {
+const getMoves = (board, line, column, count = 1, acc = { moves: [], board: board }) => {
   if (count === 64) {
     return acc
   }
   else {
     const possibleMoves = getKnightPossibleMoves()
-    for(let i = 0; i < possibleMoves.length; i ++) {
+    for (let i = 0; i < possibleMoves.length; i++) {
       const newLine = line + possibleMoves[i].y
       const newColumn = column + possibleMoves[i].x
-      if(checkValidMove(board, newLine, newColumn)) {
+      if (checkValidMove(board, newLine, newColumn)) {
         const move = count + 1
         const newBoard = fillMatrixIdx(board, newLine, newColumn, move)
         const newAcc = {
@@ -88,7 +88,7 @@ const getMoves = (board, line, column, count = 1, acc = { moves: [], board: boar
           board: newBoard
         }
         const moves = getMoves(newBoard, newLine, newColumn, move, newAcc)
-        if(moves && moves.moves.length === 63) {
+        if (moves && moves.moves.length === 63) {
           return moves
         }
       }
@@ -107,7 +107,7 @@ const main = () => {
   console.log(result.moves)
   result.board.forEach((line) => {
     console.log('\n')
-    console.log(line.reduce((prev, next) =>{
+    console.log(line.reduce((prev, next) => {
       return prev + (next.toString().length > 1 ? '| ' + next : '|  ' + next)
     }, ''))
   })
