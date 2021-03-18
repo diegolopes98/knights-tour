@@ -53,57 +53,47 @@ const mapBoardLine = (matrixLine) => {
   throw new Error('Invalid line: ' + matrixLine)
 }
 
-const getHorsePossibleMoves = (currLine, currColumn) => ([
-  { x: currColumn - 1, y: currLine + 2 },
-  { x: currColumn - 2, y: currLine + 1 },
-  { x: currColumn - 2, y: currLine - 1 },
-  { x: currColumn - 1, y: currLine - 2 },
-  { x: currColumn + 1, y: currLine - 2 },
-  { x: currColumn + 2, y: currLine - 1 },
-  { x: currColumn + 2, y: currLine + 1 },
-  { x: currColumn + 1, y: currLine + 2 },
+const getKnightPossibleMoves = () => ([
+  { x: - 1, y: + 2 },
+  { x: - 2, y: + 1 },
+  { x: - 2, y: - 1 },
+  { x: - 1, y: - 2 },
+  { x: + 1, y: - 2 },
+  { x: + 2, y: - 1 },
+  { x: + 2, y: + 1 },
+  { x: + 1, y: + 2 },
 ])
 
-const countPossibleMoves = (board, possibleMoves, { x, y}) => {
-  const newBoard = fillMatrixIdx(board, y, x)
-  return possibleMoves
-    .filter((move) => newBoard[move.y] && newBoard[move.y][move.x] === 0)
-    .length
-}
+const checkBoardRange = (value) => value >=0 && value < 8
 
-const getNextMove = (board, possibleMoves) => {
-  const calculate = (board, moves, attempt) => {
-    if(attempt > 7) return
-    else {
-      const { x, y } = moves[attempt]
-      if(board[y] && board[y][x] === 0) return { x, y }
-      else return calculate(board, moves, attempt + 1)
-    }
-  }
-  return calculate(board, possibleMoves, 0)
-}
+const checkValidMove = (board, line, column) => 
+  checkBoardRange(line) && 
+  checkBoardRange(column) &&
+  board[line][column] === 0
 
 const getMoves = (board, line, column, count = 1, acc = { moves: [], board: board}) => {
-  if(count === 1) {
-    board = fillMatrixIdx(board, line, column, count)
-    return getMoves(board, line, column, count + 1)
+  if (count === 64) {
+    return acc
   }
-  const nextMove = getNextMove(board, getHorsePossibleMoves(line, column))
-  if(!nextMove) return acc
   else {
-    const boardColumn = mapBoardColumn(column)
-    const boardLine = mapBoardLine(line)
-    const newBoard = fillMatrixIdx(board, nextMove.y, nextMove.x, count)
-    return getMoves(
-      newBoard,
-      nextMove.y,
-      nextMove.x,
-      count + 1,
-      {
-        board: newBoard,
-        moves: acc.moves.concat([boardColumn + boardLine.toString()])
+    const possibleMoves = getKnightPossibleMoves()
+    for(let i = 0; i < possibleMoves.length; i ++) {
+      const newLine = line + possibleMoves[i].y
+      const newColumn = column + possibleMoves[i].x
+      if(checkValidMove(board, newLine, newColumn)) {
+        const move = count + 1
+        const newBoard = fillMatrixIdx(board, newLine, newColumn, move)
+        const newAcc = {
+          moves: acc.moves.concat([mapBoardColumn(column) + mapBoardLine(line).toString()]),
+          board: newBoard
+        }
+        const moves = getMoves(newBoard, newLine, newColumn, move, newAcc)
+        if(moves && moves.moves.length === 63) {
+          return moves
+        }
       }
-    )
+    }
+    return acc
   }
 }
 
@@ -111,7 +101,7 @@ const main = () => {
   let board = initMatrix(8, 8)
   const column = mapMatrixColumn(initialPosition[0]) // x 
   const line = mapMatrixLine(initialPosition[1])  // y
-  
+  board = fillMatrixIdx(board, line, column)
   const result = getMoves(board, line, column)
 
   console.log(result.moves)
